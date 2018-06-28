@@ -30,6 +30,7 @@ _execute() {
   LOG_FILE="$2.log"
   POST_COMMIT_SCRIPT="$CURRENT_PATH/.post_commit_$2"
   _generate_post_commit $LOG_FILE > $POST_COMMIT_SCRIPT
+  chmod u+x $POST_COMMIT_SCRIPT
   touch "$CURRENT_PATH/$LOG_FILE"
   ln -s -f $POST_COMMIT_SCRIPT $POST_COMMIT_HOOK_PATH
 }
