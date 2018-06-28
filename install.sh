@@ -18,16 +18,28 @@ Examples:
 EOF
 }
 
+_generate_post_commit() {
+  FILE_NAME=$1
+  echo "#!/bin/sh"
+  echo "git log -1 --date=short --pretty="%s [%cd]" >> $FILE_NAME"
+}
+
 _execute() {
   POST_COMMIT_HOOK_PATH="$1/.git/hooks/post-commit"
-  SCRIPT=""
-  ln -s -f $SCRIPT $POST_COMMIT_HOOK_PATH
+  POST_COMMIT_SCRIPT=".post_commit_$2"
+  _generate_post_commit $2 > $POST_COMMIT_SCRIPT
+  ln -s -f $POST_COMMIT_SCRIPT $POST_COMMIT_HOOK_PATH
 }
 
 if [ "$1" = "--help" -o "$1" = "-help" -o "$1" = "-h" ]; then
 	 _print_help
 else
-	 REPO_PATH=$1
-   LOG_FILE_NAME=$2
-   _execute $REPO_PATH $LOG_FILE_NAME
+  if [ "$#" -ne 2 ]; then
+    _print_help
+    exit 1
+  fi
+
+  REPO_PATH=$1
+  REPO_NAME=$2
+  _execute $REPO_PATH $REPO_NAME
 fi
